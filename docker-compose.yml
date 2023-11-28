@@ -1,0 +1,63 @@
+version: '3.9'
+
+name: ${PROJECT_NAME}
+
+services:
+  postgres:
+    build:
+      context: .docker
+      dockerfile: postgres.dockerfile
+    image: "${PROJECT_NAME}-postgres"
+    container_name: "${PROJECT_NAME}_postgres"
+    restart: always
+    environment:
+      POSTGRES_USER: ${MAIN_USER}
+      POSTGRES_PASSWORD: ${MAIN_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - volume_postgres:/var/lib/postgresql/data
+    networks:
+      - network_service
+
+  mongo:
+    build:
+      context: .docker
+      dockerfile: mongo.dockerfile
+    image: "${PROJECT_NAME}-mongo"
+    container_name: "${PROJECT_NAME}_mongo"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MAIN_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MAIN_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - volume_mongo:/data/db
+    networks:
+      - network_service
+
+  php_apache:
+    build:
+      context: .docker
+      dockerfile: php-apache.dockerfile
+    image: "${PROJECT_NAME}-php_apache"
+    container_name: "${PROJECT_NAME}_php_apache"
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./html:/var/www/html
+    networks:
+      - network_service
+
+volumes:
+  volume_postgres:
+    name: "${PROJECT_NAME}-postgres"
+
+  volume_mongo:
+    name: "${PROJECT_NAME}-mongo"
+
+networks:
+  network_service:
+    name: ${PROJECT_NAME}
