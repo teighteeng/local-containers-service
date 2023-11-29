@@ -20,6 +20,25 @@ services:
     networks:
       - network_service
 
+  mysql:
+    build:
+      context: .docker
+      dockerfile: mysql.dockerfile
+    image: "${PROJECT_NAME}-mysql"
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: "${PROJECT_NAME}_mysql"
+    restart: always
+    environment:
+      MYSQL_USER: ${MAIN_USER}
+      MYSQL_PASSWORD: ${MAIN_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MAIN_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes:
+      - volume_mysql:/var/lib/mysql
+    networks:
+      - network_service
+
   mongo:
     build:
       context: .docker
@@ -34,6 +53,20 @@ services:
       - 27017:27017
     volumes:
       - volume_mongo:/data/db
+    networks:
+      - network_service
+
+  redis:
+    build:
+      context: .docker
+      dockerfile: redis.dockerfile
+    image: "${PROJECT_NAME}-redis"
+    container_name: "${PROJECT_NAME}_redis"
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - volume_redis:/data
     networks:
       - network_service
 
@@ -55,8 +88,14 @@ volumes:
   volume_postgres:
     name: "${PROJECT_NAME}-postgres"
 
+  volume_mysql:
+    name: "${PROJECT_NAME}-mysql"
+
   volume_mongo:
     name: "${PROJECT_NAME}-mongo"
+
+  volume_redis:
+    name: "${PROJECT_NAME}-redis"
 
 networks:
   network_service:
