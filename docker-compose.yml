@@ -70,17 +70,17 @@ services:
     networks:
       - network_service
 
-  php_apache:
+  apache:
     build:
       context: .docker
-      dockerfile: php-apache.dockerfile
-    image: "${PROJECT_NAME}-php_apache"
-    container_name: "${PROJECT_NAME}_php_apache"
+      dockerfile: apache.dockerfile
+    image: "${PROJECT_NAME}-apache"
+    container_name: "${PROJECT_NAME}_apache"
     restart: always
     ports:
       - 80:80
     volumes:
-      - ./html:/var/www/html
+      - ./htdocs:/usr/local/apache2/htdocs/
     networks:
       - network_service
 
